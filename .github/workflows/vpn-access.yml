@@ -1,5 +1,12 @@
 name: Test VPN
 
+permissions:
+  actions: write
+  contents: read
+env:
+  DateTime=$(date +%d.%m.%Y-%T)
+  LOG_FILENAME="runner.log"
+
 on:
   #pull_request:
   workflow_dispatch:
@@ -12,16 +19,13 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Get Endpoint Address
+      env:
+        LogDir="${{ runner.temp }}/vpn_logs"
       shell: bash
       run: |
-        DateTime=$(date +%d.%m.%Y-%T)
-        LogDir=${{ runner.temp }}/vpn_logs
-        LogFile=${LogDir}/runner.log
-        echo "DateTime=${DateTime}" >> "$GITHUB_ENV"
-        echo "LogDir=${LogDir}" >> "$GITHUB_ENV"
-        echo "LogFile=${LogFile}" >> "$GITHUB_ENV"
-        sudo mkdir ${LogDir} 2>/dev/null > ${LogFile}
-        echo "${DateTime} - Logile Start." >> ${LogFile}
+        echo "LogFile="${{ env.LogDir }}/${{ env.LOG_FILENAME }}" >> "$GITHUB_ENV"
+        sudo mkdir ${{ env.LogDir }}
+        echo "${DateTime} - Logile Start." >> ${{ env.LogFile }}
         curl -A "Endpoint = " ${{ secrets.WEBHOOK_ENDPOINT }}?iface=wg0 
         continue-on-error: true
         
@@ -43,7 +47,7 @@ jobs:
       if: ${{ failure() }}
       shell: bash
       run: |
-        echo "${{ env.DateTime }} - Failure - ${0}" >> ${{ env.LogFile }}
+        echo "${{ env.DateTime }} - Failure" >> ${{ env.LogFile }}
         sudo wg-quick down /etc/wireguard/wg0.conf >> ${{ env.LogFile }}
         echo "${{ env.DateTime }} - Logs from VPN End." >> ${{ env.LogFile }}
 
