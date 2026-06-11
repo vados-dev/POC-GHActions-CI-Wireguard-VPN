@@ -5,7 +5,7 @@ permissions:
   contents: read
 
 env:
-  LOG_FILENAME: "runner.log"
+  LOG_FILENAME: runner.log
 
 on:
   #pull_request:
@@ -15,17 +15,19 @@ jobs:
  test-vpn:
     runs-on: ubuntu-latest
     steps:
+    - name: Cleanup
+      uses: rokibhasansagar/slimhub_actions@main
+
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Get env variables
       shell: bash
       run: |
-        set -euo pipefail
-        echo "DateTime=$(date +%d.%m.%Y-%T)" >> "$GITHUB_ENV"
-        echo "LogDir=${{ runner.temp }}/logs" >> "$GITHUB_ENV"
-        echo "LogFile="${{ runner.temp }}/logs/${{ env.LOG_FILENAME }}" >> "$GITHUB_ENV"
-        continue-on-error: true
+        echo "DateTime=$(date +%d.%m.%Y-%T)" >> $GITHUB_ENV
+        echo "LogDir=${{ runner.temp }}/logs" >> $GITHUB_ENV
+        echo "LogFile="${{ runner.temp }}/logs/${{ env.LOG_FILENAME }}" >> $GITHUB_ENV
+      continue-on-error: true
 
     - name: Get Endpoint Address
       shell: bash
@@ -33,7 +35,7 @@ jobs:
         sudo mkdir ${{ env.LogDir }}
         echo "${{ env.DateTime }} - Logile Start." >> ${{ env.LogFile }}
         curl -A "Endpoint = " ${{ secrets.WEBHOOK_ENDPOINT }}?iface=wg0 
-        continue-on-error: true
+      continue-on-error: true
         
     - name: Attach WireGuard connection
       shell: bash
