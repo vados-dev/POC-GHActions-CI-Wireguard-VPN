@@ -15,16 +15,13 @@ jobs:
  test-vpn:
     runs-on: ubuntu-latest
     steps:
-    - name: Cleanup
-      uses: rokibhasansagar/slimhub_actions@main
-
     - name: Checkout code
       uses: actions/checkout@v6
 
     - name: Get env variables
       shell: bash
       run: |
-        echo "DateTime=$(date +%d.%m.%Y-%T)" >> $GITHUB_ENV
+        echo "Time=$(date +'%d.%m.%Y-%T')" >> $GITHUB_ENV
         echo "LogDir=${{ runner.temp }}/logs" >> $GITHUB_ENV
         echo "LogFile="${{ runner.temp }}/logs/${{ env.LOG_FILENAME }}" >> $GITHUB_ENV
       continue-on-error: true
@@ -33,7 +30,7 @@ jobs:
       shell: bash
       run: |
         sudo mkdir ${{ env.LogDir }}
-        echo "${{ env.DateTime }} - Logile Start." >> ${{ env.LogFile }}
+        echo "${{ env.Time }} - Logile Start." >> ${{ env.LogFile }}
         curl -A "Endpoint = " ${{ secrets.WEBHOOK_ENDPOINT }}?iface=wg0 
       continue-on-error: true
         
@@ -55,9 +52,9 @@ jobs:
       if: ${{ failure() }}
       shell: bash
       run: |
-        echo "${{ env.DateTime }} - Failure" >> ${{ env.LogFile }}
+        echo "${{ env.Time }} - Failure" >> ${{ env.LogFile }}
         sudo wg-quick down /etc/wireguard/wg0.conf >> ${{ env.LogFile }}
-        echo "${{ env.DateTime }} - Logs from VPN End." >> ${{ env.LogFile }}
+        echo "${{ env.Time }} - Logs from VPN End." >> ${{ env.LogFile }}
 
     - name: Upload Logs on Failure
       uses: actions/upload-artifact@v4
