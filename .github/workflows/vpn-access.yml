@@ -5,7 +5,7 @@ permissions:
   contents: read
 
 env:
-  LOG_FILENAME="runner.log"
+  LOG_FILENAME: "runner.log"
 
 on:
   #pull_request:
