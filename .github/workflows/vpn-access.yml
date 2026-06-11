@@ -19,7 +19,7 @@ jobs:
       uses: rokibhasansagar/slimhub_actions@main
 
     - name: Checkout code
-      uses: actions/checkout@v7
+      uses: actions/checkout@v6
 
     - name: Get env variables
       shell: bash
