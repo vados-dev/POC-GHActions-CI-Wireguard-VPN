@@ -5,8 +5,13 @@ permissions:
   contents: read
 
 env:
-  LOG_FILENAME: runner.log
-
+    TIME: $(date +'%d.%m.%Y-%T')
+    LogDir: ${{ runner.temp }}/logs
+    LogFilename: "vpn-access-${{ env.Time }}.log"
+    LogFile: ${{ env.LOG_DIR }}/${{ env.LOG_FILENAME }}
+    WEBHOOK_ENDPOINT: ${{ secrets.WEBHOOK_ENDPOINT }}
+    WIREGUARD_CONFIG: ${{ secrets.WIREGUARD_CONFIG }}
+    
 on:
   #pull_request:
   workflow_dispatch:
@@ -18,43 +23,35 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v6
 
-    - name: Get env variables
-      shell: bash
-      run: |
-        echo "Time=$(date +'%d.%m.%Y-%T')" >> $GITHUB_ENV
-        echo "LogDir=${{ runner.temp }}/logs" >> $GITHUB_ENV
-        echo "LogFile="${{ runner.temp }}/logs/${{ env.LOG_FILENAME }}" >> $GITHUB_ENV
-      continue-on-error: true
-
     - name: Get Endpoint Address
       shell: bash
       run: |
         sudo mkdir ${{ env.LogDir }}
-        echo "${{ env.Time }} - Logile Start." >> ${{ env.LogFile }}
-        curl -A "Endpoint = " ${{ secrets.WEBHOOK_ENDPOINT }}?iface=wg0 
+        echo "${{ env.TIME }} - Logile Start." >> ${{ env.LogFile }}
+        curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface=wg0 
       continue-on-error: true
         
     - name: Attach WireGuard connection
       shell: bash
       run: |
         sudo apt install -y resolvconf wireguard wireguard-tools
-        echo "${{ secrets.WIREGUARD_CONFIG }}" > /etc/wireguard/wg0.conf
+        echo "${{ env.WIREGUARD_CONFIG }}" > /etc/wireguard/wg0.conf
         sudo cat /etc/wireguard/wg0.conf
         sudo chmod 600 /etc/wireguard/wg0.conf
         sudo wg-quick up /etc/wireguard/wg0.conf
         sleep 5
         sudo wg show
         sudo wg showconf wg0
-        curl -A "endpoint = " ${{ secrets.WEBHOOK_ENDPOINT }}?type=with-vpn-1
+        curl -A "endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?type=with-vpn-1
         ping ya.ru
           
     - name: Detach WireGuard connection
       if: ${{ failure() }}
       shell: bash
       run: |
-        echo "${{ env.Time }} - Failure" >> ${{ env.LogFile }}
+        echo "${{ env.TIME }} - Failure" >> ${{ env.LogFile }}
         sudo wg-quick down /etc/wireguard/wg0.conf >> ${{ env.LogFile }}
-        echo "${{ env.Time }} - Logs from VPN End." >> ${{ env.LogFile }}
+        echo "${{ env.TIME }} - Logs from VPN End." >> ${{ env.LogFile }}
 
     - name: Upload Logs on Failure
       uses: actions/upload-artifact@v4
