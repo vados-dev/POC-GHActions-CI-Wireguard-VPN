@@ -14,7 +14,7 @@ on:
   push:
   
     paths:
-      - './GitHub/Workflows/vpn-access.yml'
+      - '.github/workflows/vpn-access.yml'
 
   #pull_request:
   workflow_dispatch:
