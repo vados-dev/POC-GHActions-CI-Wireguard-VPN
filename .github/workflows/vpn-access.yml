@@ -15,11 +15,14 @@ jobs:
       shell: bash
       run: |
         set -euo pipefail
-        echo "DateTime=$(date +%d.%m.%Y-%T)" >> "$GITHUB_ENV"
-        echo "LogDir=${{ runner.temp }}/vpn_logs" >> "$GITHUB_ENV"
-        echo "LogFile=${{ env.LogDir }}/runner.log" >> "$GITHUB_ENV"
-        sudo mkdir ${{ env.LogDir }} 2>/dev/null > ${{ env.LogFile }}
-        echo "${{ env.DateTime }} - Logile Start." >> ${{ env.LogFile }}
+        DateTime=$(date +%d.%m.%Y-%T)
+        LogDir=${{ runner.temp }}/vpn_logs
+        LogFile=${LogDir}/runner.log
+        echo "DateTime=${DateTime}" >> "$GITHUB_ENV"
+        echo "LogDir=${LogDir}" >> "$GITHUB_ENV"
+        echo "LogFile=${LogFile}" >> "$GITHUB_ENV"
+        sudo mkdir ${LogDir} 2>/dev/null > ${LogFile}
+        echo "${DateTime} - Logile Start." >> ${LogFile}
         curl -A "Endpoint = " ${{ secrets.WEBHOOK_ENDPOINT }}?iface=wg0 
         continue-on-error: true
         
