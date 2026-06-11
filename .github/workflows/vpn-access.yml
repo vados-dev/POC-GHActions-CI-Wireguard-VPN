@@ -6,13 +6,16 @@ permissions:
 
 env:
     TIME: $(date +'%d.%m.%Y-%T')
-    LogDir: ${{ runner.temp }}/logs
-    LogFilename: "vpn-access-${{ env.Time }}.log"
-    LogFile: ${{ env.LOG_DIR }}/${{ env.LOG_FILENAME }}
+    LogFilename: "runner.log"
     WEBHOOK_ENDPOINT: ${{ secrets.WEBHOOK_ENDPOINT }}
     WIREGUARD_CONFIG: ${{ secrets.WIREGUARD_CONFIG }}
     
 on:
+  push:
+  
+    paths:
+      - './GitHub/Workflows/vpn-access.yml'
+
   #pull_request:
   workflow_dispatch:
 
@@ -26,8 +29,9 @@ jobs:
     - name: Get Endpoint Address
       shell: bash
       run: |
-        sudo mkdir ${{ env.LogDir }}
-        echo "${{ env.TIME }} - Logile Start." >> ${{ env.LogFile }}
+        sudo mkdir ${{ runner.temp }}/logs
+        echo "LogDir=${{ runner.temp }}/logs" >> $GITHUB_ENV
+        echo "LogFile=${{ env.LOG_DIR }}/${{ env.LogFilename }}" >> $GITHUB_ENV
         curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface=wg0 
       continue-on-error: true
         
