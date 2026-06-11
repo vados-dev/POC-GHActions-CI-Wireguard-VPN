@@ -3,8 +3,8 @@ name: Test VPN
 permissions:
   actions: write
   contents: read
+
 env:
-  DateTime=$(date +%d.%m.%Y-%T)
   LOG_FILENAME="runner.log"
 
 on:
@@ -18,14 +18,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v6
 
-    - name: Get Endpoint Address
-      env:
-        LogDir="${{ runner.temp }}/vpn_logs"
+    - name: Get env variables
       shell: bash
       run: |
-        echo "LogFile="${{ env.LogDir }}/${{ env.LOG_FILENAME }}" >> "$GITHUB_ENV"
+        set -euo pipefail
+        echo "DateTime=$(date +%d.%m.%Y-%T)" >> "$GITHUB_ENV"
+        echo "LogDir=${{ runner.temp }}/logs" >> "$GITHUB_ENV"
+        echo "LogFile="${{ runner.temp }}/logs/${{ env.LOG_FILENAME }}" >> "$GITHUB_ENV"
+        continue-on-error: true
+
+    - name: Get Endpoint Address
+      shell: bash
+      run: |
         sudo mkdir ${{ env.LogDir }}
-        echo "${DateTime} - Logile Start." >> ${{ env.LogFile }}
+        echo "${{ env.DateTime }} - Logile Start." >> ${{ env.LogFile }}
         curl -A "Endpoint = " ${{ secrets.WEBHOOK_ENDPOINT }}?iface=wg0 
         continue-on-error: true
         
