@@ -41,8 +41,8 @@ jobs:
       run: |
         sudo apt update -y
         sudo apt install -y net-tools
-        sudo apt install -y iptables
-        sudo apt install -y iproute2
+        #sudo apt install -y iptables
+        #sudo apt install -y iproute2
         sudo apt install -y resolvconf
         curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface
 
@@ -53,7 +53,7 @@ jobs:
       with:
         endpoint: 146.120.64.211:29185
         endpoint_public_key: F0P1v/1/dwGJlDVD1tVlyIAUUd9c5sHokhv/kl5tm1U=
-        ips: 10.8.0.1/24
+        ips: 10.8.0.2/24
         allowed_ips: 0.0.0.0/0
         private_key: eKhaXEPOR/8uH+6NZz4IsYGV8JIrnm37ZfG7wGEsRWY=
         preshared_key: ngbjGRcY2A25xqy89qaqZ2JBhdDpnJVttcMwnErdjnY=
