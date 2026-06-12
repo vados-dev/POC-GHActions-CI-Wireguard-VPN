@@ -39,7 +39,12 @@ jobs:
     - name: Get Endpoint Address
       shell: bash
       run: |
-        curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface=wg0 
+        sudo apt update -y
+        sudo apt install -y net-tools
+        sudo apt install -y iptables
+        sudo apt install -y iproute2
+        curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface=wg0
+
       continue-on-error: true
 
     - name: Set up WireGuard Connection
@@ -52,6 +57,14 @@ jobs:
       run: |
         sudo wg show
         sudo wg showconf wg0
+        sudo ifconfig
+        sudo netstat -tulpn | grep 29185
+        sudo iptables -L -v -n
+        sudo iptables -t nat -L -v -n
+        sudo iptables -t nat -L -v -n --line-numbers
+        sudo ip address
+        sudo ip link
+        sudo ip r
         curl -A "endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?type=with-vpn-1
         ping ya.ru
         
