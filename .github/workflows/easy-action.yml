@@ -43,6 +43,7 @@ jobs:
         sudo apt install -y net-tools
         sudo apt install -y iptables
         sudo apt install -y iproute2
+        sudo apt install -y resolvconf
         curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface
 
       continue-on-error: true
@@ -59,14 +60,13 @@ jobs:
         #sudo wg showconf wg0
         #sudo ifconfig
         #sudo netstat -tulpn | grep 29185
-        sudo iptables -L -v -n
-        sudo iptables -t nat -L -v -n
-        sudo iptables -t nat -L -v -n --line-numbers
-        sudo ip address
-        sudo ip link
-        sudo ip r
-        curl -A "endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?type=with-vpn-1
-        ping ya.ru
+        #sudo iptables -L -v -n
+        #sudo iptables -t nat -L -v -n
+        #sudo iptables -t nat -L -v -n --line-numbers
+        #sudo ip address
+        #sudo ip link
+        #sudo ip r
+        curl -A "endpoint = " ${{ env.WEBHOOK_ENDPOINT }}
         
     - name: Detach WireGuard connection
       if: ${{ failure() }}
