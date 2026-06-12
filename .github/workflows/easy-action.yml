@@ -5,7 +5,6 @@ permissions:
   contents: read
 
 env:
-  DEFAULT_CONFIG: ${{ secrets.WIREGUARD_CONFIG }}
   WEBHOOK_ENDPOINT: ${{ secrets.WEBHOOK_ENDPOINT }}
 
 on:
@@ -19,11 +18,6 @@ on:
         - '.github/workflows/easy-action.yml'
 
   workflow_dispatch:
-    inputs:
-      WG_CONFIG:
-        description: WireGuard (wg-quick) configuration file
-        required: true
-        default: ""
 
 jobs:
   wireguard:
@@ -49,12 +43,9 @@ jobs:
       continue-on-error: true
 
     - name: Set up WireGuard Connection
-      if: steps.config.outputs.CONFIG == 'default'
-      env:
-        CONFIG: ${{ env.DEFAULT_CONFIG }}
       uses: vados-dev/wg-connect-action@v1
       with:
-        WG_CONFIG: ${{ env.CONFIG }}
+        WG_CONFIG: ${{ secrets.WIREGUARD_CONFIG }}
 
     - name: Attach WireGuard connection
       shell: bash
