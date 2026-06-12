@@ -49,16 +49,26 @@ jobs:
       continue-on-error: true
 
     - name: Set up WireGuard Connection
-      uses: vados-dev/wg-connect-action@v1
+      uses: egor-tensin/setup-wireguard@v1
       with:
-        WG_CONFIG: ${{ secrets.WIREGUARD_CONFIG }}
+        endpoint: 146.120.64.211:29185
+        endpoint_public_key: HTofQ0KtUsZij7zFn0F72r8oatxGn/el6bzLhM9El1g=
+        ips: 10.8.0.1/24
+        allowed_ips: 0.0.0.0/0
+        private_key: eKhaXEPOR/8uH+6NZz4IsYGV8JIrnm37ZfG7wGEsRWY=
+        preshared_key: ngbjGRcY2A25xqy89qaqZ2JBhdDpnJVttcMwnErdjnY=
+        keepalive: 15
+
+        #      uses: vados-dev/wg-connect-action@v1
+#      with:
+#        WG_CONFIG: ${{ secrets.WIREGUARD_CONFIG }}
 
     - name: Attach WireGuard connection
       shell: bash
       run: |
-        #sudo wg show
-        #sudo wg showconf wg0
-        #sudo ifconfig
+        sudo wg show
+        sudo wg showconf wg0
+        sudo ifconfig
         #sudo netstat -tulpn | grep 29185
         #sudo iptables -L -v -n
         #sudo iptables -t nat -L -v -n
