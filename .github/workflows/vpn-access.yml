@@ -46,14 +46,14 @@ jobs:
         sudo apt install -y iptables
         sudo sysctl -w net.ipv4.ip_forward=1
         sudo sysctl -w net.ipv4.conf.all.src_valid_mark=1
-        sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
-        sudo sysctl -w net.ipv6.conf.all.forwarding=1
-        sudo sysctl -w net.ipv6.conf.default.forwarding=1
+        #sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+        #sudo sysctl -w net.ipv6.conf.all.forwarding=1
+        #sudo sysctl -w net.ipv6.conf.default.forwarding=1
         sudo echo "net.ipv4.ip_forward=1" | sudo tee /etc/sysctl.conf
         sudo echo "net.ipv4.conf.all.src_valid_mark=1" | sudo tee /etc/sysctl.conf
-        sudo echo "ipv6.conf.all.disable_ipv6=1" | sudo tee /etc/sysctl.conf
-        sudo echo "net.ipv6.conf.all.forwarding=1" | sudo tee /etc/sysctl.conf
-        sudo echo "net.ipv6.conf.default.forwarding=1" | sudo tee /etc/sysctl.conf
+        #sudo echo "ipv6.conf.all.disable_ipv6=1" | sudo tee /etc/sysctl.conf
+        #sudo echo "net.ipv6.conf.all.forwarding=1" | sudo tee /etc/sysctl.conf
+        #sudo echo "net.ipv6.conf.default.forwarding=1" | sudo tee /etc/sysctl.conf
         sudo sysctl -p /etc/sysctl.conf
         echo "${{ env.WIREGUARD_CONFIG }}" > ./wg0.conf
         sudo cat ./wg0.conf
