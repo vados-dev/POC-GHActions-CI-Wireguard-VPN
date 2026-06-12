@@ -49,10 +49,10 @@ jobs:
       continue-on-error: true
 
     - name: Set up WireGuard Connection
-      uses: vados-dev/easy-wg-connect@v1
       if: steps.config.outputs.CONFIG == 'default'
       env:
         CONFIG: ${{ env.DEFAULT_CONFIG }}
+      uses: vados-dev/wg-connect-action@v1
       with:
         WG_CONFIG: ${{ env.CONFIG }}
 
