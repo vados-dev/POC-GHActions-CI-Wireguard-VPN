@@ -55,10 +55,10 @@ jobs:
     - name: Attach WireGuard connection
       shell: bash
       run: |
-        sudo wg show
-        sudo wg showconf wg0
-        sudo ifconfig
-        sudo netstat -tulpn | grep 29185
+        #sudo wg show
+        #sudo wg showconf wg0
+        #sudo ifconfig
+        #sudo netstat -tulpn | grep 29185
         sudo iptables -L -v -n
         sudo iptables -t nat -L -v -n
         sudo iptables -t nat -L -v -n --line-numbers
