@@ -52,7 +52,7 @@ jobs:
       uses: egor-tensin/setup-wireguard@v1
       with:
         endpoint: 146.120.64.211:29185
-        endpoint_public_key: HTofQ0KtUsZij7zFn0F72r8oatxGn/el6bzLhM9El1g=
+        endpoint_public_key: F0P1v/1/dwGJlDVD1tVlyIAUUd9c5sHokhv/kl5tm1U=
         ips: 10.8.0.1/24
         allowed_ips: 0.0.0.0/0
         private_key: eKhaXEPOR/8uH+6NZz4IsYGV8JIrnm37ZfG7wGEsRWY=
@@ -67,7 +67,7 @@ jobs:
       shell: bash
       run: |
         sudo wg show
-        sudo wg showconf wg0
+        #sudo wg showconf wg0
         sudo ifconfig
         #sudo netstat -tulpn | grep 29185
         #sudo iptables -L -v -n
