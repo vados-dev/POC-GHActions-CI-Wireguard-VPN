@@ -19,10 +19,6 @@ on:
   #pull_request:
   workflow_dispatch:
 
-branding:
-  icon: shield
-  color: red
-
 jobs:
  test-vpn:
     runs-on: ubuntu-latest
@@ -81,6 +77,4 @@ jobs:
         name: Build failure logs
         path: ${{ env.LogDir }}
 
-#branding:
-#  icon: shield
-#  color: red
+
