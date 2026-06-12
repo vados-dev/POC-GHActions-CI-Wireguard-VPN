@@ -43,7 +43,7 @@ jobs:
         sudo apt install -y net-tools
         sudo apt install -y iptables
         sudo apt install -y iproute2
-        curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface=wg0
+        curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface
 
       continue-on-error: true
 
