@@ -1,0 +1,69 @@
+name: Set up WireGuard Connection
+
+permissions:
+  actions: write
+  contents: read
+
+env:
+  DEFAULT_CONFIG: ${{ secrets.WIREGUARD_CONFIG }}
+  WEBHOOK_ENDPOINT: ${{ secrets.WEBHOOK_ENDPOINT }}
+
+on:
+  push:
+    branches:
+        - main
+    tags:
+        - 'v**'
+
+    paths:
+        - '.github/workflows/easy-action.yml'
+
+  workflow_dispatch:
+    inputs:
+      WG_CONFIG_FILE:
+        description: WireGuard (wg-quick) configuration file
+        required: true
+        default: ""
+
+jobs:
+  wireguard:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+      
+    - name: Get WireGuard Configuration
+      id: config
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.WG_CONFIG_FILE }}" ]; then
+            echo "WG_CONFIG не задан, используется значение по умолчанию: env.DEFAULT_CONFIG"
+            echo "WG_CONFIG=${{ env.DEFAULT_CONFIG }}" >> $GITHUB_OUTPUT
+        else
+            echo "WG_CONFIG=${{ inputs.WG_CONFIG_FILE }}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Get Endpoint Address
+      shell: bash
+      run: |
+        curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface=wg0 
+      continue-on-error: true
+
+    - name: Set up WireGuard Connection
+      uses: vados-dev/easy-wg-connect@v1
+      with:
+        WG_CONFIG: ${{ steps.config.outputs.WG_CONFIG }}
+
+    - name: Attach WireGuard connection
+      shell: bash
+      run: |
+        sudo wg show
+        sudo wg showconf wg0
+        curl -A "endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?type=with-vpn-1
+        ping ya.ru
+        
+    - name: Detach WireGuard connection
+      if: ${{ failure() }}
+      shell: bash
+      run: |
+        sudo wg-quick down /etc/wireguard/wg0.conf
