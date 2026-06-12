@@ -21,10 +21,10 @@ on:
 
 jobs:
  test-vpn:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
 
     - name: Get Endpoint Address
       shell: bash
@@ -32,13 +32,18 @@ jobs:
         sudo mkdir ${{ runner.temp }}/logs
         echo "LogDir=${{ runner.temp }}/logs" >> $GITHUB_ENV
         echo "LogFile=${{ env.LOG_DIR }}/${{ env.LogFilename }}" >> $GITHUB_ENV
-        curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?iface=wg0 
+        curl -A "Endpoint = " ${{ env.WEBHOOK_ENDPOINT }}
       continue-on-error: true
         
     - name: Attach WireGuard connection
       shell: bash
       run: |
-        sudo apt install -y resolvconf wireguard
+        sudo apt update -y
+        sudo apt install -y iproute2
+        sudo apt install -y resolvconf
+        sudo apt install -y wireguard wireguard-tools
+        sudo apt install -y net-tools
+        sudo apt install -y iptables
         sudo sysctl -w net.ipv4.ip_forward=1
         sudo sysctl -w net.ipv4.conf.all.src_valid_mark=1
         sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
@@ -50,31 +55,33 @@ jobs:
         echo "net.ipv6.conf.all.forwarding=1" | sudo tee /etc/sysctl.conf
         echo "net.ipv6.conf.default.forwarding=1" | sudo tee /etc/sysctl.conf
         sudo sysctl -p /etc/sysctl.conf
-        sudo systemctl enable --now resolvconf
-        sudo systemctl start resolvconf
         sudo mkdir /etc/wireguard
-        echo "${{ env.WIREGUARD_CONFIG }}" > /etc/wireguard/wg0.conf
+        sudo echo "${{ env.WIREGUARD_CONFIG }}" > /etc/wireguard/wg0.conf
         sudo cat /etc/wireguard/wg0.conf
         sudo chmod 600 /etc/wireguard/wg0.conf
         sudo wg-quick up /etc/wireguard/wg0.conf
         sleep 5
         sudo wg show
         sudo wg showconf wg0
-        curl -A "endpoint = " ${{ env.WEBHOOK_ENDPOINT }}?type=with-vpn-1
-        ping ya.ru
-          
-    - name: Detach WireGuard connection
-      if: ${{ failure() }}
-      shell: bash
-      run: |
-        echo "${{ env.TIME }} - Failure" >> ${{ env.LogFile }}
-        sudo wg-quick down /etc/wireguard/wg0.conf >> ${{ env.LogFile }}
-        echo "${{ env.TIME }} - Logs from VPN End." >> ${{ env.LogFile }}
+        sudo ifconfig
+        sudo iptables -L -v -n
+        sudo iptables -t nat -L -v -n
+        sudo iptables -t nat -L -v -n --line-numbers
+        curl -A "endpoint = " ${{ env.WEBHOOK_ENDPOINT }}
 
     - name: Upload Logs on Failure
+      if: ${{ failure() }}
       uses: actions/upload-artifact@v4
       with:
         name: Build failure logs
         path: ${{ env.LogDir }}
+
+#   - name: Detach WireGuard connection
+#     shell: bash
+#     run: |
+#       echo "${{ env.TIME }} - Failure" >> ${{ env.LogFile }}
+#       sudo wg-quick down /etc/wireguard/wg0.conf >> ${{ env.LogFile }}
+#       echo "${{ env.TIME }} - Logs from VPN End." >> ${{ env.LogFile }}
+
 
 
