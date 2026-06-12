@@ -63,12 +63,12 @@ jobs:
         sudo wg show
         sudo wg showconf wg0
         sudo ifconfig
-        sudo iptables -L -v -n
-        sudo iptables -t nat -L -v -n
-        sudo iptables -t nat -L -v -n --line-numbers
-        sudo netstat -tulpn | grep 29185
-        sudo ip address
-        sudo ip link
+        #sudo iptables -L -v -n
+        #sudo iptables -t nat -L -v -n
+        #sudo iptables -t nat -L -v -n --line-numbers
+        #sudo netstat -tulpn | grep 29185
+        #sudo ip address
+        #sudo ip link
         sudo ip r
         curl -A "endpoint = " ${{ env.WEBHOOK_ENDPOINT }}
         ping ros.vados.ru
