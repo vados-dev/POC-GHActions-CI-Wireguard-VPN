@@ -20,7 +20,7 @@ on:
 
   workflow_dispatch:
     inputs:
-      WG_CONFIG_FILE:
+      WG_CONFIG:
         description: WireGuard (wg-quick) configuration file
         required: true
         default: ""
@@ -36,11 +36,10 @@ jobs:
       id: config
       shell: bash
       run: |
-        if [ -z "${{ inputs.WG_CONFIG_FILE }}" ]; then
+        if [ -z "${{ inputs.WG_CONFIG }}" ]; then
             echo "WG_CONFIG не задан, используется значение по умолчанию: env.DEFAULT_CONFIG"
-            echo "WG_CONFIG=${{ env.DEFAULT_CONFIG }}" >> $GITHUB_OUTPUT
         else
-            echo "WG_CONFIG=${{ inputs.WG_CONFIG_FILE }}" >> $GITHUB_OUTPUT
+            echo "CONFIG=${{ inputs.WG_CONFIG }}" >> $GITHUB_ENV
         fi
 
     - name: Get Endpoint Address
@@ -51,8 +50,11 @@ jobs:
 
     - name: Set up WireGuard Connection
       uses: vados-dev/easy-wg-connect@v1
+      if: steps.config.outputs.CONFIG == 'default'
+      env:
+        CONFIG: ${{ env.DEFAULT_CONFIG }}
       with:
-        WG_CONFIG: ${{ steps.config.outputs.WG_CONFIG }}
+        WG_CONFIG: ${{ env.CONFIG }}
 
     - name: Attach WireGuard connection
       shell: bash
